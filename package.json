@@ -5,7 +5,7 @@
     "scripts": {
         "start": "node dist/index.js",
         "build": "tsc",
-        "dev": "nodemon src/index.ts",
+        "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
         "format": "prettier --write ."
     },
     "keywords": [],
@@ -13,6 +13,7 @@
     "license": "ISC",
     "description": "",
     "dependencies": {
+        "cross-env": "^7.0.3",
         "dotenv": "^16.4.5",
         "express": "^4.21.1"
     },
