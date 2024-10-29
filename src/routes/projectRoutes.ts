@@ -3,6 +3,7 @@ import express from 'express';
 // Controllers import
 import {
     createProject,
+    deleteProject,
     getProjectByID,
     getUserProjects,
     updateProject,
@@ -25,5 +26,8 @@ router.get('/:projectID', authMiddleware, getProjectByID);
 
 // Update project by ID endpoint
 router.put('/:projectID', authMiddleware, updateProject);
+
+// Delete project by ID endpoint
+router.delete('/:projectID', authMiddleware, deleteProject);
 
 export default router;

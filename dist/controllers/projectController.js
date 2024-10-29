@@ -5,15 +5,16 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.updateProject =
+exports.deleteProject =
+    exports.updateProject =
     exports.getProjectByID =
     exports.getUserProjects =
     exports.createProject =
         void 0;
-// Models import
-const projectModel_1 = __importDefault(require('../models/projectModel'));
 const http_errors_1 = __importDefault(require('http-errors'));
 const mongoose_1 = __importDefault(require('mongoose'));
+// Models import
+const projectModel_1 = __importDefault(require('../models/projectModel'));
 // Create project
 const createProject = async (req, res, next) => {
     try {
@@ -104,3 +105,32 @@ const updateProject = async (req, res, next) => {
     }
 };
 exports.updateProject = updateProject;
+// Delete a project by ID
+const deleteProject = async (req, res, next) => {
+    const { projectID } = req.params;
+    // Validate ObjectId format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(
+            http_errors_1.default.BadRequest('Invalid Project ID format')
+        );
+    }
+    try {
+        // Find and delete the project
+        const project = await projectModel_1.default.findOneAndDelete({
+            _id: projectID,
+            owner: req.user?._id,
+        });
+        // Check if the project exists and the user is the owner
+        if (!project) {
+            return next(
+                http_errors_1.default.NotFound(
+                    'Project not found or unauthorized'
+                )
+            );
+        }
+        res.json({ message: 'Project deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.deleteProject = deleteProject;

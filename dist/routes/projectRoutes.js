@@ -36,4 +36,10 @@ router.put(
     authMiddleware_1.authMiddleware,
     projectController_1.updateProject
 );
+// Delete project by ID endpoint
+router.delete(
+    '/:projectID',
+    authMiddleware_1.authMiddleware,
+    projectController_1.deleteProject
+);
 exports.default = router;
