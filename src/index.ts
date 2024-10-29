@@ -12,6 +12,9 @@ import mongoose from 'mongoose';
 // Configs import
 import logger from './configs/loggerConfig';
 
+// Routes import
+import userRoutes from './routes/userRoute';
+
 // Create express app
 const app = express();
 
@@ -60,11 +63,8 @@ app.use(compression());
 // Setup CORS
 app.use(cors());
 
-// Test task route
-app.post('/', (req: Request, res: Response) => {
-    // res.send('Testing SkyVentures Task API');
-    res.send(req.body);
-});
+// Routing
+app.use('/api/user', userRoutes);
 
 // Start the dev server
 let server = app.listen(PORT, () => {

@@ -1,5 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, CallbackError } from 'mongoose';
 import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 interface IUser extends Document {
     username: string;
@@ -13,6 +14,7 @@ const userSchema: Schema<IUser> = new Schema({
         type: String,
         required: [true, 'Username is required'],
         unique: true,
+        minLength: [2, 'Your username needs to be at least 2 characters long'],
     },
     email: {
         type: String,
@@ -44,6 +46,20 @@ const userSchema: Schema<IUser> = new Schema({
         type: Date,
         default: Date.now,
     },
+});
+
+// Hash password on presave using `bcryptjs`
+userSchema.pre('save', async function (next) {
+    try {
+        if (this.isNew) {
+            const salt = await bcrypt.genSalt(12);
+            const hashedPassword = await bcrypt.hash(this.password, salt);
+            this.password = hashedPassword;
+        }
+        next();
+    } catch (error) {
+        next(error as CallbackError);
+    }
 });
 
 const User = mongoose.model<IUser>('User', userSchema);

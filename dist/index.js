@@ -1,24 +1,22 @@
-'use strict';
-var __importDefault =
-    (this && this.__importDefault) ||
-    function (mod) {
-        return mod && mod.__esModule ? mod : { default: mod };
-    };
-Object.defineProperty(exports, '__esModule', { value: true });
-const express_1 = __importDefault(require('express'));
-const dotenv_1 = __importDefault(require('dotenv'));
-const morgan_1 = __importDefault(require('morgan'));
-const helmet_1 = __importDefault(require('helmet'));
-const express_mongo_sanitize_1 = __importDefault(
-    require('express-mongo-sanitize')
-);
-const cookie_parser_1 = __importDefault(require('cookie-parser'));
-const compression_1 = __importDefault(require('compression'));
-const cors_1 = __importDefault(require('cors'));
-const http_errors_1 = __importDefault(require('http-errors'));
-const mongoose_1 = __importDefault(require('mongoose'));
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = __importDefault(require("dotenv"));
+const morgan_1 = __importDefault(require("morgan"));
+const helmet_1 = __importDefault(require("helmet"));
+const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize"));
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const compression_1 = __importDefault(require("compression"));
+const cors_1 = __importDefault(require("cors"));
+const http_errors_1 = __importDefault(require("http-errors"));
+const mongoose_1 = __importDefault(require("mongoose"));
 // Configs import
-const loggerConfig_1 = __importDefault(require('./configs/loggerConfig'));
+const loggerConfig_1 = __importDefault(require("./configs/loggerConfig"));
+// Routes import
+const userRoute_1 = __importDefault(require("./routes/userRoute"));
 // Create express app
 const app = (0, express_1.default)();
 // Load environment variables
@@ -28,16 +26,10 @@ const DATABASE_URL = process.env.DATABASE_URL;
 // Connect to MongoDB atlas
 mongoose_1.default
     .connect(DATABASE_URL)
-    .then(() =>
-        loggerConfig_1.default.info(
-            `Database connected successfully -> ${DATABASE_URL}`
-        )
-    );
+    .then(() => loggerConfig_1.default.info(`Database connected successfully -> ${DATABASE_URL}`));
 // Terminate server on MongoDB error
 mongoose_1.default.connection.on('error', err => {
-    loggerConfig_1.default.error(
-        `Database connection failed -> ${err.message}`
-    );
+    loggerConfig_1.default.error(`Database connection failed -> ${err.message}`);
     process.exit(1);
 });
 // HTTP request logger middleware
@@ -58,22 +50,15 @@ app.use((0, cookie_parser_1.default)());
 app.use((0, compression_1.default)());
 // Setup CORS
 app.use((0, cors_1.default)());
-// Test task route
-app.post('/', (req, res) => {
-    // res.send('Testing SkyVentures Task API');
-    res.send(req.body);
-});
+// Routing
+app.use('/api/user', userRoute_1.default);
 // Start the dev server
 let server = app.listen(PORT, () => {
     loggerConfig_1.default.info(`Server listening on port ${PORT}`);
 });
 // Catch all incoming 404 Not Found error
 app.use(async (req, res, next) => {
-    next(
-        http_errors_1.default.NotFound(
-            'The requested resource could not be found on this server'
-        )
-    );
+    next(http_errors_1.default.NotFound('The requested resource could not be found on this server'));
 });
 // Handle HTTP errors
 app.use(async (err, req, res, next) => {
@@ -90,12 +75,13 @@ const exitHandler = () => {
     if (server) {
         loggerConfig_1.default.info(`Terminate the server on port ${PORT}`);
         process.exit(1);
-    } else {
+    }
+    else {
         process.exit(1);
     }
 };
 // Handle unexpected error
-const unexpectedErrorHandler = err => {
+const unexpectedErrorHandler = (err) => {
     loggerConfig_1.default.error(err);
     exitHandler();
 };
