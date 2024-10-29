@@ -112,3 +112,11 @@ export const login = async (
         next(error);
     }
 };
+
+export const testAuthFunc = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    res.send('Auth middleware is working');
+};
