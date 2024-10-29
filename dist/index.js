@@ -42,6 +42,31 @@ app.post('/', (req, res) => {
     res.send(req.body);
 });
 // Start the dev server
-app.listen(PORT, () => {
+let server = app.listen(PORT, () => {
     loggerConfig_1.default.info(`Server listening on port ${PORT}`);
+});
+// Terminate server on error
+const exitHandler = () => {
+    if (server) {
+        loggerConfig_1.default.info(`Terminate the server on port ${PORT}`);
+        process.exit(1);
+    }
+    else {
+        process.exit(1);
+    }
+};
+// Handle unexpected error
+const unexpectedErrorHandler = (err) => {
+    loggerConfig_1.default.error(err);
+    exitHandler();
+};
+// Listen for server error logs
+process.on('uncaughtException', unexpectedErrorHandler);
+process.on('unhandledRejection', unexpectedErrorHandler);
+// Terminate server gracefully
+process.on('SIGTERM', () => {
+    if (server) {
+        loggerConfig_1.default.info(`Terminate the server on port ${PORT}`);
+        process.exit(1);
+    }
 });
