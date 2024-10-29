@@ -5,7 +5,8 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.getProjectByID =
+exports.updateProject =
+    exports.getProjectByID =
     exports.getUserProjects =
     exports.createProject =
         void 0;
@@ -72,3 +73,34 @@ const getProjectByID = async (req, res, next) => {
     }
 };
 exports.getProjectByID = getProjectByID;
+// Update a project by ID
+const updateProject = async (req, res, next) => {
+    const { projectID } = req.params;
+    // Validate ObjectId format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(
+            http_errors_1.default.BadRequest('Invalid Project ID format')
+        );
+    }
+    try {
+        const { name, description } = req.body;
+        // Find and update the project
+        const project = await projectModel_1.default.findOneAndUpdate(
+            { _id: projectID, owner: req.user?._id },
+            { name, description },
+            { new: true, runValidators: true }
+        );
+        // Check if the project exists and the user is the owner
+        if (!project) {
+            return next(
+                http_errors_1.default.NotFound(
+                    'Project not found or unauthorized'
+                )
+            );
+        }
+        res.json({ project });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.updateProject = updateProject;

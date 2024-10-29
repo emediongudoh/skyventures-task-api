@@ -83,3 +83,39 @@ export const getProjectByID = async (
         next(error);
     }
 };
+
+// Update a project by ID
+export const updateProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { projectID } = req.params;
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(createHttpError.BadRequest('Invalid Project ID format'));
+    }
+
+    try {
+        const { name, description } = req.body;
+
+        // Find and update the project
+        const project = await Project.findOneAndUpdate(
+            { _id: projectID, owner: req.user?._id },
+            { name, description },
+            { new: true, runValidators: true }
+        );
+
+        // Check if the project exists and the user is the owner
+        if (!project) {
+            return next(
+                createHttpError.NotFound('Project not found or unauthorized')
+            );
+        }
+
+        res.json({ project });
+    } catch (error) {
+        next(error);
+    }
+};

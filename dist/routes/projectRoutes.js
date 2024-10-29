@@ -30,4 +30,10 @@ router.get(
     authMiddleware_1.authMiddleware,
     projectController_1.getProjectByID
 );
+// Update project by ID endpoint
+router.put(
+    '/:projectID',
+    authMiddleware_1.authMiddleware,
+    projectController_1.updateProject
+);
 exports.default = router;
