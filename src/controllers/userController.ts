@@ -3,7 +3,10 @@ import createHttpError from 'http-errors';
 import validator from 'validator';
 
 // Models import
-import User from '../models/userModel';
+import User, { IUser } from '../models/userModel';
+
+// Utils import
+import { generateToken } from '../utils/generateToken';
 
 export const register = async (
     req: Request,
@@ -49,21 +52,21 @@ export const register = async (
         }
 
         // Create and save the user
-        const user = new User({
+        const user: IUser = await User.create({
             username,
             email,
             password,
         });
 
-        // Save the user
-        await user.save();
+        // Generate JWT
+        const token = generateToken({ id: user._id.toString() }, '7d');
 
         // Return the newly registered user
         res.status(201).json({
-            _id: user._id,
+            _id: user._id.toString(),
             username: user.username,
             email: user.email,
-            password: user.password,
+            token,
         });
     } catch (error) {
         next(error);

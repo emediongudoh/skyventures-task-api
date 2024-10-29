@@ -2,7 +2,8 @@ import mongoose, { Schema, Document, CallbackError } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 
-interface IUser extends Document {
+export interface IUser extends Document {
+    _id: mongoose.Types.ObjectId;
     username: string;
     email: string;
     password: string;
