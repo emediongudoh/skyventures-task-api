@@ -11,6 +11,7 @@ const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const compression_1 = __importDefault(require("compression"));
 const cors_1 = __importDefault(require("cors"));
+const http_errors_1 = __importDefault(require("http-errors"));
 // Configs import
 const loggerConfig_1 = __importDefault(require("./configs/loggerConfig"));
 // Create express app
@@ -44,6 +45,20 @@ app.post('/', (req, res) => {
 // Start the dev server
 let server = app.listen(PORT, () => {
     loggerConfig_1.default.info(`Server listening on port ${PORT}`);
+});
+// Catch all incoming 404 Not Found error
+app.use(async (req, res, next) => {
+    next(http_errors_1.default.NotFound('The requested resource could not be found on this server'));
+});
+// Handle HTTP errors
+app.use(async (err, req, res, next) => {
+    res.status(err.status || 500);
+    res.send({
+        error: {
+            status: err.status || 500,
+            message: err.message,
+        },
+    });
 });
 // Terminate server on error
 const exitHandler = () => {

@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -6,6 +6,7 @@ import mongoSanitize from 'express-mongo-sanitize';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
+import createHttpError from 'http-errors';
 
 // Configs import
 import logger from './configs/loggerConfig';
@@ -53,6 +54,26 @@ app.post('/', (req: Request, res: Response) => {
 // Start the dev server
 let server = app.listen(PORT, () => {
     logger.info(`Server listening on port ${PORT}`);
+});
+
+// Catch all incoming 404 Not Found error
+app.use(async (req, res, next) => {
+    next(
+        createHttpError.NotFound(
+            'The requested resource could not be found on this server'
+        )
+    );
+});
+
+// Handle HTTP errors
+app.use(async (err: any, req: Request, res: Response, next: NextFunction) => {
+    res.status(err.status || 500);
+    res.send({
+        error: {
+            status: err.status || 500,
+            message: err.message,
+        },
+    });
 });
 
 // Terminate server on error
