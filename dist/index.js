@@ -12,6 +12,7 @@ const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const compression_1 = __importDefault(require("compression"));
 const cors_1 = __importDefault(require("cors"));
 const http_errors_1 = __importDefault(require("http-errors"));
+const mongoose_1 = __importDefault(require("mongoose"));
 // Configs import
 const loggerConfig_1 = __importDefault(require("./configs/loggerConfig"));
 // Create express app
@@ -19,6 +20,16 @@ const app = (0, express_1.default)();
 // Load environment variables
 dotenv_1.default.config();
 const PORT = process.env.PORT || 3000;
+const DATABASE_URL = process.env.DATABASE_URL;
+// Connect to MongoDB atlas
+mongoose_1.default
+    .connect(DATABASE_URL)
+    .then(() => loggerConfig_1.default.info(`Database connected successfully -> ${DATABASE_URL}`));
+// Terminate server on MongoDB error
+mongoose_1.default.connection.on('error', err => {
+    loggerConfig_1.default.error(`Database connection failed -> ${err.message}`);
+    process.exit(1);
+});
 // HTTP request logger middleware
 if (process.env.NODE_ENV !== 'production') {
     app.use((0, morgan_1.default)('dev'));
