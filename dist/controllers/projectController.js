@@ -5,9 +5,14 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.getUserProjects = exports.createProject = void 0;
+exports.getProjectByID =
+    exports.getUserProjects =
+    exports.createProject =
+        void 0;
 // Models import
 const projectModel_1 = __importDefault(require('../models/projectModel'));
+const http_errors_1 = __importDefault(require('http-errors'));
+const mongoose_1 = __importDefault(require('mongoose'));
 // Create project
 const createProject = async (req, res, next) => {
     try {
@@ -39,3 +44,31 @@ const getUserProjects = async (req, res, next) => {
     }
 };
 exports.getUserProjects = getUserProjects;
+// Get project by ID
+const getProjectByID = async (req, res, next) => {
+    const { projectID } = req.params;
+    // Validate ObjectId format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(
+            http_errors_1.default.BadRequest('Invalid Project ID format')
+        );
+    }
+    try {
+        const project = await projectModel_1.default.findOne({
+            _id: projectID,
+            owner: req.user?._id,
+        });
+        // Check if the project exists and the user is the owner
+        if (!project) {
+            return next(
+                http_errors_1.default.NotFound(
+                    'Project not found or you do not have permission to view it'
+                )
+            );
+        }
+        res.json({ project });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.getProjectByID = getProjectByID;

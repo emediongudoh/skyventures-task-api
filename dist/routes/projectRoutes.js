@@ -24,4 +24,10 @@ router.get(
     authMiddleware_1.authMiddleware,
     projectController_1.getUserProjects
 );
+// Get project by ID endpoint
+router.get(
+    '/:projectID',
+    authMiddleware_1.authMiddleware,
+    projectController_1.getProjectByID
+);
 exports.default = router;
