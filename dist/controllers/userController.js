@@ -5,13 +5,15 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.register = void 0;
+exports.login = exports.register = void 0;
 const http_errors_1 = __importDefault(require('http-errors'));
 const validator_1 = __importDefault(require('validator'));
+const bcryptjs_1 = __importDefault(require('bcryptjs'));
 // Models import
 const userModel_1 = __importDefault(require('../models/userModel'));
 // Utils import
 const generateToken_1 = require('../utils/generateToken');
+// Register
 const register = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
@@ -72,3 +74,41 @@ const register = async (req, res, next) => {
     }
 };
 exports.register = register;
+// Login
+const login = async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        // Check if email is valid
+        const user = await userModel_1.default.findOne({ email });
+        if (!user) {
+            throw http_errors_1.default.BadRequest(
+                'No account found for this email address. Retry again'
+            );
+        }
+        // Check if password is correct
+        const correctPass = await bcryptjs_1.default.compare(
+            password,
+            user.password
+        );
+        if (!correctPass) {
+            throw http_errors_1.default.BadRequest(
+                'Incorrect password. Retry again'
+            );
+        }
+        // Generate JWT
+        const token = (0, generateToken_1.generateToken)(
+            { id: user._id.toString() },
+            '7d'
+        );
+        // Return the logged-in user
+        res.status(200).json({
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            token,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.login = login;

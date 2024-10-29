@@ -12,4 +12,6 @@ const userController_1 = require('../controllers/userController');
 const router = express_1.default.Router();
 // Register endpoint
 router.post('/register', userController_1.register);
+// Login endpoint
+router.post('/login', userController_1.login);
 exports.default = router;

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import createHttpError from 'http-errors';
 import validator from 'validator';
+import bcrypt from 'bcryptjs';
 
 // Models import
 import User, { IUser } from '../models/userModel';
@@ -8,6 +9,7 @@ import User, { IUser } from '../models/userModel';
 // Utils import
 import { generateToken } from '../utils/generateToken';
 
+// Register
 export const register = async (
     req: Request,
     res: Response,
@@ -64,6 +66,44 @@ export const register = async (
         // Return the newly registered user
         res.status(201).json({
             _id: user._id.toString(),
+            username: user.username,
+            email: user.email,
+            token,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Login
+export const login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const { email, password } = req.body;
+
+        // Check if email is valid
+        const user = await User.findOne({ email });
+        if (!user) {
+            throw createHttpError.BadRequest(
+                'No account found for this email address. Retry again'
+            );
+        }
+
+        // Check if password is correct
+        const correctPass = await bcrypt.compare(password, user.password);
+        if (!correctPass) {
+            throw createHttpError.BadRequest('Incorrect password. Retry again');
+        }
+
+        // Generate JWT
+        const token = generateToken({ id: user._id.toString() }, '7d');
+
+        // Return the logged-in user
+        res.status(200).json({
+            _id: user._id,
             username: user.username,
             email: user.email,
             token,
