@@ -1,9 +1,10 @@
 import { Request as ExpressRequest, Response, NextFunction } from 'express';
 import createHttpError from 'http-errors';
 import jwt from 'jsonwebtoken';
-
 interface Request extends ExpressRequest {
-    user?: any;
+    user?: {
+        _id: string;
+    };
 }
 
 export const authMiddleware = async (
@@ -12,20 +13,27 @@ export const authMiddleware = async (
     next: NextFunction
 ) => {
     try {
-        let header = req.header('Authorization');
+        const header = req.header('Authorization');
 
-        // Check if token is valid
-        const token = header?.slice(7, header.length);
-        if (!token) {
-            throw createHttpError.BadRequest('The token is not valid');
+        if (!header || !header.startsWith('Bearer ')) {
+            return next(
+                createHttpError(
+                    401,
+                    'Authorization header missing or malformed'
+                )
+            );
         }
 
-        // Verify JWT
-        jwt.verify(token, process.env.JWT_SECRET!, (error, user) => {
-            if (error) {
-                throw createHttpError.BadRequest('The token is not valid');
+        // Extract token by removing 'Bearer ' prefix
+        const token = header.replace('Bearer ', '');
+
+        // Verify and decode the JWT
+        jwt.verify(token, process.env.JWT_SECRET!, (error, decoded) => {
+            if (error || !decoded || typeof decoded !== 'object') {
+                return next(createHttpError(401, 'Invalid or expired token'));
             }
-            req.user = user;
+
+            req.user = { _id: decoded._id as string };
             next();
         });
     } catch (error) {

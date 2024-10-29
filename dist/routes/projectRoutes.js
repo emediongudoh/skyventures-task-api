@@ -6,12 +6,16 @@ var __importDefault =
     };
 Object.defineProperty(exports, '__esModule', { value: true });
 const express_1 = __importDefault(require('express'));
-// Controller imports
-const userController_1 = require('../controllers/userController');
+// Controllers import
+const projectController_1 = require('../controllers/projectController');
+// Middlewares import
+const authMiddleware_1 = require('../middlewares/authMiddleware');
 // Create express router
 const router = express_1.default.Router();
-// Register endpoint
-router.post('/register', userController_1.register);
-// Login endpoint
-router.post('/login', userController_1.login);
+// Create project endpoint
+router.post(
+    '/',
+    authMiddleware_1.authMiddleware,
+    projectController_1.createProject
+);
 exports.default = router;

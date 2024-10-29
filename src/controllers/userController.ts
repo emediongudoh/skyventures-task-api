@@ -61,7 +61,7 @@ export const register = async (
         });
 
         // Generate JWT
-        const token = generateToken({ id: user._id.toString() }, '7d');
+        const token = generateToken({ _id: user._id.toString() }, '7d');
 
         // Return the newly registered user
         res.status(201).json({
@@ -99,7 +99,7 @@ export const login = async (
         }
 
         // Generate JWT
-        const token = generateToken({ id: user._id.toString() }, '7d');
+        const token = generateToken({ _id: user._id.toString() }, '7d');
 
         // Return the logged-in user
         res.status(200).json({
@@ -111,12 +111,4 @@ export const login = async (
     } catch (error) {
         next(error);
     }
-};
-
-export const testAuthFunc = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    res.send('Auth middleware is working');
 };

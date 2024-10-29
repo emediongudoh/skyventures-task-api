@@ -14,6 +14,7 @@ import logger from './configs/loggerConfig';
 
 // Routes import
 import userRoutes from './routes/userRoute';
+import projectRoutes from './routes/projectRoutes';
 
 // Create express app
 const app = express();
@@ -65,6 +66,7 @@ app.use(cors());
 
 // Routing
 app.use('/api/user', userRoutes);
+app.use('/api/projects', projectRoutes);
 
 // Start the dev server
 let server = app.listen(PORT, () => {

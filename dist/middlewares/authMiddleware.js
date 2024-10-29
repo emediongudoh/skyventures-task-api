@@ -10,23 +10,31 @@ const http_errors_1 = __importDefault(require('http-errors'));
 const jsonwebtoken_1 = __importDefault(require('jsonwebtoken'));
 const authMiddleware = async (req, res, next) => {
     try {
-        let header = req.header('Authorization');
-        // Check if token is valid
-        const token = header?.slice(7, header.length);
-        if (!token) {
-            throw http_errors_1.default.BadRequest('The token is not valid');
+        const header = req.header('Authorization');
+        if (!header || !header.startsWith('Bearer ')) {
+            return next(
+                (0, http_errors_1.default)(
+                    401,
+                    'Authorization header missing or malformed'
+                )
+            );
         }
-        // Verify JWT
+        // Extract token by removing 'Bearer ' prefix
+        const token = header.replace('Bearer ', '');
+        // Verify and decode the JWT
         jsonwebtoken_1.default.verify(
             token,
             process.env.JWT_SECRET,
-            (error, user) => {
-                if (error) {
-                    throw http_errors_1.default.BadRequest(
-                        'The token is not valid'
+            (error, decoded) => {
+                if (error || !decoded || typeof decoded !== 'object') {
+                    return next(
+                        (0, http_errors_1.default)(
+                            401,
+                            'Invalid or expired token'
+                        )
                     );
                 }
-                req.user = user;
+                req.user = { _id: decoded._id };
                 next();
             }
         );

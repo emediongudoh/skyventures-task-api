@@ -5,7 +5,7 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.testAuthFunc = exports.login = exports.register = void 0;
+exports.login = exports.register = void 0;
 const http_errors_1 = __importDefault(require('http-errors'));
 const validator_1 = __importDefault(require('validator'));
 const bcryptjs_1 = __importDefault(require('bcryptjs'));
@@ -59,7 +59,7 @@ const register = async (req, res, next) => {
         });
         // Generate JWT
         const token = (0, generateToken_1.generateToken)(
-            { id: user._id.toString() },
+            { _id: user._id.toString() },
             '7d'
         );
         // Return the newly registered user
@@ -97,7 +97,7 @@ const login = async (req, res, next) => {
         }
         // Generate JWT
         const token = (0, generateToken_1.generateToken)(
-            { id: user._id.toString() },
+            { _id: user._id.toString() },
             '7d'
         );
         // Return the logged-in user
@@ -112,7 +112,3 @@ const login = async (req, res, next) => {
     }
 };
 exports.login = login;
-const testAuthFunc = async (req, res, next) => {
-    res.send('Auth middleware is working');
-};
-exports.testAuthFunc = testAuthFunc;
