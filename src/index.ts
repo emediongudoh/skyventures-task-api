@@ -7,6 +7,9 @@ import cookieParser from 'cookie-parser';
 import compression from 'compression';
 import cors from 'cors';
 
+// Configs import
+import logger from './configs/loggerConfig';
+
 // Create express app
 const app = express();
 
@@ -49,5 +52,5 @@ app.post('/', (req: Request, res: Response) => {
 
 // Start the dev server
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    logger.info(`Server listening on port ${PORT}`);
 });

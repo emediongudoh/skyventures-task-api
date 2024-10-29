@@ -11,6 +11,8 @@ const express_mongo_sanitize_1 = __importDefault(require("express-mongo-sanitize
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const compression_1 = __importDefault(require("compression"));
 const cors_1 = __importDefault(require("cors"));
+// Configs import
+const loggerConfig_1 = __importDefault(require("./configs/loggerConfig"));
 // Create express app
 const app = (0, express_1.default)();
 // Load environment variables
@@ -41,5 +43,5 @@ app.post('/', (req, res) => {
 });
 // Start the dev server
 app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+    loggerConfig_1.default.info(`Server listening on port ${PORT}`);
 });
