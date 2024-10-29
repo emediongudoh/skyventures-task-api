@@ -7,6 +7,7 @@ interface Request extends ExpressRequest {
     user?: { _id: string };
 }
 
+// Create project
 export const createProject = async (
     req: Request,
     res: Response,
@@ -26,6 +27,22 @@ export const createProject = async (
 
         // Return the newly created project
         res.status(201).json({ project: newProject });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Get user projects
+export const getUserProjects = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const projects = await Project.find({ owner: req.user?._id });
+
+        // Return user projects
+        res.json({ projects });
     } catch (error) {
         next(error);
     }

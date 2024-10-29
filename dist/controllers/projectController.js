@@ -5,9 +5,10 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.createProject = void 0;
+exports.getUserProjects = exports.createProject = void 0;
 // Models import
 const projectModel_1 = __importDefault(require('../models/projectModel'));
+// Create project
 const createProject = async (req, res, next) => {
     try {
         const { name, description } = req.body;
@@ -25,3 +26,16 @@ const createProject = async (req, res, next) => {
     }
 };
 exports.createProject = createProject;
+// Get user projects
+const getUserProjects = async (req, res, next) => {
+    try {
+        const projects = await projectModel_1.default.find({
+            owner: req.user?._id,
+        });
+        // Return user projects
+        res.json({ projects });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.getUserProjects = getUserProjects;

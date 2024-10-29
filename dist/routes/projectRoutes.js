@@ -18,4 +18,10 @@ router.post(
     authMiddleware_1.authMiddleware,
     projectController_1.createProject
 );
+// Get user projects endpoint
+router.get(
+    '/',
+    authMiddleware_1.authMiddleware,
+    projectController_1.getUserProjects
+);
 exports.default = router;

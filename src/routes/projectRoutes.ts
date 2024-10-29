@@ -1,7 +1,10 @@
 import express from 'express';
 
 // Controllers import
-import { createProject } from '../controllers/projectController';
+import {
+    createProject,
+    getUserProjects,
+} from '../controllers/projectController';
 
 // Middlewares import
 import { authMiddleware } from '../middlewares/authMiddleware';
@@ -11,5 +14,8 @@ const router = express.Router();
 
 // Create project endpoint
 router.post('/', authMiddleware, createProject);
+
+// Get user projects endpoint
+router.get('/', authMiddleware, getUserProjects);
 
 export default router;
