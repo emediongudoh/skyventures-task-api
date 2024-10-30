@@ -6,7 +6,7 @@ var __importDefault =
     };
 Object.defineProperty(exports, '__esModule', { value: true });
 exports.bulkUpdateTasksStatus =
-    exports.deleteTask =
+    exports.softDeleteTask =
     exports.updateTask =
     exports.getTaskByID =
     exports.getTasksByProject =
@@ -46,6 +46,7 @@ const getTasksByProject = async (req, res, next) => {
         const project = await projectModel_1.default.findOne({
             _id: projectID,
             owner: req.user?._id,
+            is_deleted: false,
         });
         if (!project) {
             return next(
@@ -55,7 +56,7 @@ const getTasksByProject = async (req, res, next) => {
             );
         }
         // Build query object for task filtering
-        const query = { project: projectID };
+        const query = { project: projectID, is_deleted: false };
         if (status) query.status = status;
         // Validate and set the due date filter
         if (due_date && !isNaN(Date.parse(due_date))) {
@@ -97,6 +98,7 @@ const getTaskByID = async (req, res, next) => {
         const project = await projectModel_1.default.findOne({
             _id: projectID,
             owner: req.user?._id,
+            is_deleted: false,
         });
         if (!project) {
             return next(
@@ -109,6 +111,7 @@ const getTaskByID = async (req, res, next) => {
         const task = await taskModel_1.default.findOne({
             _id: taskID,
             project: projectID,
+            is_deleted: false,
         });
         if (!task) {
             return next(
@@ -156,8 +159,8 @@ const updateTask = async (req, res, next) => {
     }
 };
 exports.updateTask = updateTask;
-// Delete task
-const deleteTask = async (req, res, next) => {
+// Soft delete task
+const softDeleteTask = async (req, res, next) => {
     const { projectID, taskID } = req.params;
     // Validate projectID format
     if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
@@ -171,22 +174,26 @@ const deleteTask = async (req, res, next) => {
     }
     try {
         // Find and delete the task
-        const task = await taskModel_1.default.findOneAndDelete({
-            _id: taskID,
-            project: projectID,
-        });
+        const task = await taskModel_1.default.findOneAndUpdate(
+            {
+                _id: taskID,
+                project: projectID,
+            },
+            { is_deleted: true },
+            { new: true, runValidators: true }
+        );
         // Check if the task exists and the user is the owner
         if (!task) {
             return next(
                 http_errors_1.default.NotFound('Task not found or unauthorized')
             );
         }
-        res.json({ message: 'Task deleted successfully' });
+        res.json({ message: 'Task soft deleted successfully' });
     } catch (error) {
         next(error);
     }
 };
-exports.deleteTask = deleteTask;
+exports.softDeleteTask = softDeleteTask;
 // Bulk update tasks status
 const bulkUpdateTasksStatus = async (req, res, next) => {
     const { projectID } = req.params;

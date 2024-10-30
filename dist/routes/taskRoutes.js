@@ -27,6 +27,9 @@ router.put(
 router.get('/:projectID/tasks/:taskID', taskController_1.getTaskByID);
 // Update task by ID endpoint
 router.put('/:projectID/tasks/:taskID', taskController_1.updateTask);
-// Delete task by ID endpoint
-router.delete('/:projectID/tasks/:taskID', taskController_1.deleteTask);
+// Soft delete task by ID endpoint
+router.put(
+    '/:projectID/tasks/:taskID/soft-delete',
+    taskController_1.softDeleteTask
+);
 exports.default = router;

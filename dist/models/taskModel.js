@@ -85,6 +85,8 @@ const taskSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+    // Soft delete flag
+    is_deleted: { type: Boolean, default: false },
 });
 const Task = mongoose_1.default.model('Task', taskSchema);
 exports.default = Task;

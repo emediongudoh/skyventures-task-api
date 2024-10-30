@@ -50,6 +50,7 @@ export const getTasksByProject = async (
         const project = await Project.findOne({
             _id: projectID,
             owner: req.user?._id,
+            is_deleted: false,
         });
         if (!project) {
             return next(
@@ -60,7 +61,7 @@ export const getTasksByProject = async (
         }
 
         // Build query object for task filtering
-        const query: any = { project: projectID };
+        const query: any = { project: projectID, is_deleted: false };
         if (status) query.status = status;
 
         // Validate and set the due date filter
@@ -109,6 +110,7 @@ export const getTaskByID = async (
         const project = await Project.findOne({
             _id: projectID,
             owner: req.user?._id,
+            is_deleted: false,
         });
         if (!project) {
             return next(
@@ -119,7 +121,11 @@ export const getTaskByID = async (
         }
 
         // Find the task within the project
-        const task = await Task.findOne({ _id: taskID, project: projectID });
+        const task = await Task.findOne({
+            _id: taskID,
+            project: projectID,
+            is_deleted: false,
+        });
         if (!task) {
             return next(
                 createHttpError.NotFound('Task not found within this project')
@@ -172,8 +178,8 @@ export const updateTask = async (
     }
 };
 
-// Delete task
-export const deleteTask = async (
+// Soft delete task
+export const softDeleteTask = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -192,10 +198,14 @@ export const deleteTask = async (
 
     try {
         // Find and delete the task
-        const task = await Task.findOneAndDelete({
-            _id: taskID,
-            project: projectID,
-        });
+        const task = await Task.findOneAndUpdate(
+            {
+                _id: taskID,
+                project: projectID,
+            },
+            { is_deleted: true },
+            { new: true, runValidators: true }
+        );
 
         // Check if the task exists and the user is the owner
         if (!task) {
@@ -204,7 +214,7 @@ export const deleteTask = async (
             );
         }
 
-        res.json({ message: 'Task deleted successfully' });
+        res.json({ message: 'Task soft deleted successfully' });
     } catch (error) {
         next(error);
     }

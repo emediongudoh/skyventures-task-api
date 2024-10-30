@@ -14,6 +14,7 @@ export interface ITask extends Document {
     due_date?: Date;
     project: mongoose.Types.ObjectId;
     created_at: Date;
+    is_deleted: boolean;
 }
 
 const taskSchema: Schema<ITask> = new Schema({
@@ -42,6 +43,8 @@ const taskSchema: Schema<ITask> = new Schema({
         type: Date,
         default: Date.now,
     },
+    // Soft delete flag
+    is_deleted: { type: Boolean, default: false },
 });
 
 const Task = mongoose.model<ITask>('Task', taskSchema);

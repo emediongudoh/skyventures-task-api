@@ -7,7 +7,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 import {
     bulkUpdateTasksStatus,
     createTask,
-    deleteTask,
+    softDeleteTask,
     getTaskByID,
     getTasksByProject,
     updateTask,
@@ -34,7 +34,7 @@ router.get('/:projectID/tasks/:taskID', getTaskByID);
 // Update task by ID endpoint
 router.put('/:projectID/tasks/:taskID', updateTask);
 
-// Delete task by ID endpoint
-router.delete('/:projectID/tasks/:taskID', deleteTask);
+// Soft delete task by ID endpoint
+router.put('/:projectID/tasks/:taskID/soft-delete', softDeleteTask);
 
 export default router;
