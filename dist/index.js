@@ -28,7 +28,10 @@ const app = (0, express_1.default)();
 // Load environment variables
 dotenv_1.default.config();
 const PORT = process.env.PORT || 3000;
-const DATABASE_URL = process.env.DATABASE_URL;
+const DATABASE_URL =
+    process.env.NODE_ENV === 'test'
+        ? process.env.TEST_DATABASE_URL
+        : process.env.DATABASE_URL;
 // Connect to MongoDB atlas
 mongoose_1.default
     .connect(DATABASE_URL)
@@ -112,3 +115,4 @@ process.on('SIGTERM', () => {
         process.exit(1);
     }
 });
+exports.default = app;

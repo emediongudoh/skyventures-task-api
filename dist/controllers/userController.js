@@ -26,6 +26,12 @@ const register = async (req, res, next) => {
                 'Your username needs to be at least 2 characters long'
             );
         }
+        // Validate email format
+        if (!validator_1.default.isEmail(email)) {
+            throw http_errors_1.default.BadRequest(
+                'The email address you entered is not valid'
+            );
+        }
         // Check if username is already in use
         const usernameExist = await userModel_1.default.findOne({ username });
         if (usernameExist) {

@@ -24,7 +24,10 @@ const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
-const DATABASE_URL = process.env.DATABASE_URL!;
+const DATABASE_URL =
+    process.env.NODE_ENV === 'test'
+        ? process.env.TEST_DATABASE_URL!
+        : process.env.DATABASE_URL!;
 
 // Connect to MongoDB atlas
 mongoose
@@ -122,3 +125,5 @@ process.on('SIGTERM', () => {
         process.exit(1);
     }
 });
+
+export default app;

@@ -26,6 +26,13 @@ export const register = async (
             );
         }
 
+        // Validate email format
+        if (!validator.isEmail(email)) {
+            throw createHttpError.BadRequest(
+                'The email address you entered is not valid'
+            );
+        }
+
         // Check if username is already in use
         const usernameExist = await User.findOne({ username });
         if (usernameExist) {
