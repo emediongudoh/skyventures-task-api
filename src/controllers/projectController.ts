@@ -106,7 +106,7 @@ export const updateProject = async (
 
         // Find and update the project
         const project = await Project.findOneAndUpdate(
-            { _id: projectID, owner: req.user?._id },
+            { _id: projectID, owner: req.user?._id, is_deleted: false },
             { name, description },
             { new: true, runValidators: true }
         );

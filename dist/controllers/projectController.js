@@ -89,7 +89,7 @@ const updateProject = async (req, res, next) => {
         const { name, description } = req.body;
         // Find and update the project
         const project = await projectModel_1.default.findOneAndUpdate(
-            { _id: projectID, owner: req.user?._id },
+            { _id: projectID, owner: req.user?._id, is_deleted: false },
             { name, description },
             { new: true, runValidators: true }
         );

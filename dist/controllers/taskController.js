@@ -141,9 +141,21 @@ const updateTask = async (req, res, next) => {
         return next(http_errors_1.default.BadRequest('Invalid task ID format'));
     }
     try {
+        // Check if the project exists and is not deleted
+        const project = await projectModel_1.default.findOne({
+            _id: projectID,
+            is_deleted: false,
+        });
+        if (!project) {
+            return next(
+                http_errors_1.default.NotFound(
+                    'Project not found or you do not have the permission to view it'
+                )
+            );
+        }
         // Find and update the task
         const task = await taskModel_1.default.findOneAndUpdate(
-            { _id: taskID, project: projectID },
+            { _id: taskID, project: projectID, is_deleted: false },
             updates,
             { new: true, runValidators: true }
         );

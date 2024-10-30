@@ -158,9 +158,22 @@ export const updateTask = async (
     }
 
     try {
+        // Check if the project exists and is not deleted
+        const project = await Project.findOne({
+            _id: projectID,
+            is_deleted: false,
+        });
+        if (!project) {
+            return next(
+                createHttpError.NotFound(
+                    'Project not found or you do not have the permission to view it'
+                )
+            );
+        }
+
         // Find and update the task
         const task = await Task.findOneAndUpdate(
-            { _id: taskID, project: projectID },
+            { _id: taskID, project: projectID, is_deleted: false },
             updates,
             { new: true, runValidators: true }
         );
