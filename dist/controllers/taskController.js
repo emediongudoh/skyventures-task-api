@@ -39,8 +39,38 @@ exports.createTask = createTask;
 // Get tasks by project
 const getTasksByProject = async (req, res, next) => {
     const { projectID } = req.params;
+    const { status, due_date } = req.query;
     try {
-        const tasks = await taskModel_1.default.find({ project: projectID });
+        // Find the project to confirm the user owns it
+        const project = await projectModel_1.default.findOne({
+            _id: projectID,
+            owner: req.user?._id,
+        });
+        if (!project) {
+            return next(
+                http_errors_1.default.NotFound(
+                    'Project not found or you do not have permission to view it'
+                )
+            );
+        }
+        // Build query object for task filtering
+        const query = { project: projectID };
+        if (status) query.status = status;
+        // Validate and set the due date filter
+        if (due_date && !isNaN(Date.parse(due_date))) {
+            const date = new Date(due_date);
+            const nextDay = new Date(date);
+            nextDay.setDate(date.getDate() + 1);
+            query.due_date = { $gte: date, $lt: nextDay };
+        } else if (due_date) {
+            return next(
+                http_errors_1.default.BadRequest(
+                    'Invalid date format for due_date'
+                )
+            );
+        }
+        // Get filtered tasks
+        const tasks = await taskModel_1.default.find(query);
         // Return tasks by project
         res.status(200).json({ tasks });
     } catch (error) {
