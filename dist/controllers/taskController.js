@@ -5,7 +5,8 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.updateTask =
+exports.deleteTask =
+    exports.updateTask =
     exports.getTaskByID =
     exports.getTasksByProject =
     exports.createTask =
@@ -124,3 +125,34 @@ const updateTask = async (req, res, next) => {
     }
 };
 exports.updateTask = updateTask;
+// Delete task
+const deleteTask = async (req, res, next) => {
+    const { projectID, taskID } = req.params;
+    // Validate projectID format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(
+            http_errors_1.default.BadRequest('Invalid Project ID format')
+        );
+    }
+    // Validate taskID format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.taskID)) {
+        return next(http_errors_1.default.BadRequest('Invalid Task ID format'));
+    }
+    try {
+        // Find and delete the task
+        const task = await taskModel_1.default.findOneAndDelete({
+            _id: taskID,
+            project: projectID,
+        });
+        // Check if the task exists and the user is the owner
+        if (!task) {
+            return next(
+                http_errors_1.default.NotFound('Task not found or unauthorized')
+            );
+        }
+        res.json({ message: 'Task deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.deleteTask = deleteTask;

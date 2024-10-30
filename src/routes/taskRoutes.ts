@@ -6,6 +6,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 // Controllers import
 import {
     createTask,
+    deleteTask,
     getTaskByID,
     getTasksByProject,
     updateTask,
@@ -28,5 +29,8 @@ router.get('/:projectID/tasks/:taskID', getTaskByID);
 
 // Update task by ID endpoint
 router.put('/:projectID/tasks/:taskID', updateTask);
+
+// Delete task by ID endpoint
+router.delete('/:projectID/tasks/:taskID', deleteTask);
 
 export default router;

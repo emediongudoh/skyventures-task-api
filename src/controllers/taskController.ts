@@ -139,3 +139,41 @@ export const updateTask = async (
         next(error);
     }
 };
+
+// Delete task
+export const deleteTask = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { projectID, taskID } = req.params;
+
+    // Validate projectID format
+    if (!mongoose.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(createHttpError.BadRequest('Invalid Project ID format'));
+    }
+
+    // Validate taskID format
+    if (!mongoose.Types.ObjectId.isValid(req.params.taskID)) {
+        return next(createHttpError.BadRequest('Invalid Task ID format'));
+    }
+
+    try {
+        // Find and delete the task
+        const task = await Task.findOneAndDelete({
+            _id: taskID,
+            project: projectID,
+        });
+
+        // Check if the task exists and the user is the owner
+        if (!task) {
+            return next(
+                createHttpError.NotFound('Task not found or unauthorized')
+            );
+        }
+
+        res.json({ message: 'Task deleted successfully' });
+    } catch (error) {
+        next(error);
+    }
+};

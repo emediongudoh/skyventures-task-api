@@ -22,4 +22,6 @@ router.get('/:projectID/tasks', taskController_1.getTasksByProject);
 router.get('/:projectID/tasks/:taskID', taskController_1.getTaskByID);
 // Update task by ID endpoint
 router.put('/:projectID/tasks/:taskID', taskController_1.updateTask);
+// Delete task by ID endpoint
+router.delete('/:projectID/tasks/:taskID', taskController_1.deleteTask);
 exports.default = router;
