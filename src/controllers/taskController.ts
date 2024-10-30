@@ -28,3 +28,21 @@ export const createTask = async (
         next(error);
     }
 };
+
+// Get tasks by project
+export const getTasksByProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { projectID } = req.params;
+
+    try {
+        const tasks = await Task.find({ project: projectID });
+
+        // Return tasks by project
+        res.status(200).json({ tasks });
+    } catch (error) {
+        next(error);
+    }
+};

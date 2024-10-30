@@ -16,4 +16,6 @@ const router = express_1.default.Router();
 router.use(authMiddleware_1.authMiddleware);
 // Create task endpoint
 router.post('/:projectID/tasks', taskController_1.createTask);
+// Get tasks by project endpoint
+router.get('/:projectID/tasks', taskController_1.getTasksByProject);
 exports.default = router;

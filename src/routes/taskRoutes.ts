@@ -4,7 +4,7 @@ import express from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware';
 
 // Controllers import
-import { createTask } from '../controllers/taskController';
+import { createTask, getTasksByProject } from '../controllers/taskController';
 
 // Create express router
 const router = express.Router();
@@ -14,5 +14,8 @@ router.use(authMiddleware);
 
 // Create task endpoint
 router.post('/:projectID/tasks', createTask);
+
+// Get tasks by project endpoint
+router.get('/:projectID/tasks', getTasksByProject);
 
 export default router;
