@@ -43,7 +43,14 @@ export const getTasksByProject = async (
     next: NextFunction
 ) => {
     const { projectID } = req.params;
-    const { status, due_date } = req.query;
+    const {
+        status,
+        due_date,
+        page = 1,
+        limit = 10,
+        sortBy = 'created_at',
+        order = 'asc',
+    } = req.query;
 
     try {
         // Find the project to confirm the user owns it
@@ -77,11 +84,29 @@ export const getTasksByProject = async (
             );
         }
 
-        // Get filtered tasks
-        const tasks = await Task.find(query);
+        // Convert pagination and sorting params to numbers
+        const pageNumber = Math.max(Number(page), 1);
+        const pageSize = Math.max(Number(limit), 1);
+        const sortOrder = order === 'desc' ? -1 : 1;
 
-        // Return tasks by project
-        res.status(200).json({ tasks });
+        // Get filtered, paginated and sorted tasks
+        const tasks = await Task.find(query)
+            .sort({ [sortBy as string]: sortOrder })
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize);
+
+        // Return the paginated tasks list
+        res.status(200).json({
+            tasks,
+            pagination: {
+                currentPage: pageNumber,
+                pageSize,
+                totalCount: await Task.countDocuments(query),
+                totalPages: Math.ceil(
+                    (await Task.countDocuments(query)) / pageSize
+                ),
+            },
+        });
     } catch (error) {
         next(error);
     }

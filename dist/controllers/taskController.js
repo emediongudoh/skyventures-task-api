@@ -40,7 +40,14 @@ exports.createTask = createTask;
 // Get tasks by project
 const getTasksByProject = async (req, res, next) => {
     const { projectID } = req.params;
-    const { status, due_date } = req.query;
+    const {
+        status,
+        due_date,
+        page = 1,
+        limit = 10,
+        sortBy = 'created_at',
+        order = 'asc',
+    } = req.query;
     try {
         // Find the project to confirm the user owns it
         const project = await projectModel_1.default.findOne({
@@ -71,10 +78,28 @@ const getTasksByProject = async (req, res, next) => {
                 )
             );
         }
-        // Get filtered tasks
-        const tasks = await taskModel_1.default.find(query);
-        // Return tasks by project
-        res.status(200).json({ tasks });
+        // Convert pagination and sorting params to numbers
+        const pageNumber = Math.max(Number(page), 1);
+        const pageSize = Math.max(Number(limit), 1);
+        const sortOrder = order === 'desc' ? -1 : 1;
+        // Get filtered, paginated and sorted tasks
+        const tasks = await taskModel_1.default
+            .find(query)
+            .sort({ [sortBy]: sortOrder })
+            .skip((pageNumber - 1) * pageSize)
+            .limit(pageSize);
+        // Return the paginated tasks list
+        res.status(200).json({
+            tasks,
+            pagination: {
+                currentPage: pageNumber,
+                pageSize,
+                totalCount: await taskModel_1.default.countDocuments(query),
+                totalPages: Math.ceil(
+                    (await taskModel_1.default.countDocuments(query)) / pageSize
+                ),
+            },
+        });
     } catch (error) {
         next(error);
     }
