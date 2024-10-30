@@ -209,3 +209,46 @@ export const deleteTask = async (
         next(error);
     }
 };
+
+// Bulk update tasks status
+export const bulkUpdateTasksStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { projectID } = req.params;
+    const { taskIDs, status } = req.body;
+
+    try {
+        // Find the project to confirm the user owns it
+        const project = await Project.findOne({
+            _id: projectID,
+            owner: req.user?._id,
+        });
+        if (!project) {
+            return next(
+                createHttpError.NotFound(
+                    'Project not found or you do not have permission to view it'
+                )
+            );
+        }
+
+        // Validate the status value
+        const validStatuses = ['pending', 'in-progress', 'completed'];
+        if (!validStatuses.includes(status)) {
+            return next(createHttpError.BadRequest('Invalid status value'));
+        }
+
+        // Update tasks in bulk
+        const result = await Task.updateMany(
+            { _id: { $in: taskIDs }, project: projectID },
+            { status }
+        );
+
+        res.status(200).json({
+            message: `${result.modifiedCount} tasks updated to status '${status}'`,
+        });
+    } catch (error) {
+        next(error);
+    }
+};

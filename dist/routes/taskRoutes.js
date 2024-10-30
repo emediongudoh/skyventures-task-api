@@ -18,6 +18,11 @@ router.use(authMiddleware_1.authMiddleware);
 router.post('/:projectID/tasks', taskController_1.createTask);
 // Get tasks by project endpoint
 router.get('/:projectID/tasks', taskController_1.getTasksByProject);
+// Bulk update tasks status endpoint
+router.put(
+    '/:projectID/tasks/bulk-update',
+    taskController_1.bulkUpdateTasksStatus
+);
 // Get task by ID endpoint
 router.get('/:projectID/tasks/:taskID', taskController_1.getTaskByID);
 // Update task by ID endpoint

@@ -5,7 +5,8 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.deleteTask =
+exports.bulkUpdateTasksStatus =
+    exports.deleteTask =
     exports.updateTask =
     exports.getTaskByID =
     exports.getTasksByProject =
@@ -186,3 +187,40 @@ const deleteTask = async (req, res, next) => {
     }
 };
 exports.deleteTask = deleteTask;
+// Bulk update tasks status
+const bulkUpdateTasksStatus = async (req, res, next) => {
+    const { projectID } = req.params;
+    const { taskIDs, status } = req.body;
+    try {
+        // Find the project to confirm the user owns it
+        const project = await projectModel_1.default.findOne({
+            _id: projectID,
+            owner: req.user?._id,
+        });
+        if (!project) {
+            return next(
+                http_errors_1.default.NotFound(
+                    'Project not found or you do not have permission to view it'
+                )
+            );
+        }
+        // Validate the status value
+        const validStatuses = ['pending', 'in-progress', 'completed'];
+        if (!validStatuses.includes(status)) {
+            return next(
+                http_errors_1.default.BadRequest('Invalid status value')
+            );
+        }
+        // Update tasks in bulk
+        const result = await taskModel_1.default.updateMany(
+            { _id: { $in: taskIDs }, project: projectID },
+            { status }
+        );
+        res.status(200).json({
+            message: `${result.modifiedCount} tasks updated to status '${status}'`,
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.bulkUpdateTasksStatus = bulkUpdateTasksStatus;

@@ -5,6 +5,7 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 
 // Controllers import
 import {
+    bulkUpdateTasksStatus,
     createTask,
     deleteTask,
     getTaskByID,
@@ -23,6 +24,9 @@ router.post('/:projectID/tasks', createTask);
 
 // Get tasks by project endpoint
 router.get('/:projectID/tasks', getTasksByProject);
+
+// Bulk update tasks status endpoint
+router.put('/:projectID/tasks/bulk-update', bulkUpdateTasksStatus);
 
 // Get task by ID endpoint
 router.get('/:projectID/tasks/:taskID', getTaskByID);
