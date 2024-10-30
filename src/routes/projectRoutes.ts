@@ -15,19 +15,22 @@ import { authMiddleware } from '../middlewares/authMiddleware';
 // Create express router
 const router = express.Router();
 
+// Apply authMiddleware to all routes in this router
+router.use(authMiddleware);
+
 // Create project endpoint
-router.post('/', authMiddleware, createProject);
+router.post('/', createProject);
 
 // Get user projects endpoint
-router.get('/', authMiddleware, getUserProjects);
+router.get('/', getUserProjects);
 
 // Get project by ID endpoint
-router.get('/:projectID', authMiddleware, getProjectByID);
+router.get('/:projectID', getProjectByID);
 
 // Update project by ID endpoint
-router.put('/:projectID', authMiddleware, updateProject);
+router.put('/:projectID', updateProject);
 
 // Delete project by ID endpoint
-router.delete('/:projectID', authMiddleware, deleteProject);
+router.delete('/:projectID', deleteProject);
 
 export default router;

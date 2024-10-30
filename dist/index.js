@@ -22,6 +22,7 @@ const loggerConfig_1 = __importDefault(require('./configs/loggerConfig'));
 // Routes import
 const userRoute_1 = __importDefault(require('./routes/userRoute'));
 const projectRoutes_1 = __importDefault(require('./routes/projectRoutes'));
+const taskRoutes_1 = __importDefault(require('./routes/taskRoutes'));
 // Create express app
 const app = (0, express_1.default)();
 // Load environment variables
@@ -64,6 +65,7 @@ app.use((0, cors_1.default)());
 // Routing
 app.use('/api/user', userRoute_1.default);
 app.use('/api/projects', projectRoutes_1.default);
+app.use('/api/projects', taskRoutes_1.default);
 // Start the dev server
 let server = app.listen(PORT, () => {
     loggerConfig_1.default.info(`Server listening on port ${PORT}`);

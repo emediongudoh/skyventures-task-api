@@ -6,22 +6,14 @@ var __importDefault =
     };
 Object.defineProperty(exports, '__esModule', { value: true });
 const express_1 = __importDefault(require('express'));
-// Controllers import
-const projectController_1 = require('../controllers/projectController');
 // Middlewares import
 const authMiddleware_1 = require('../middlewares/authMiddleware');
+// Controllers import
+const taskController_1 = require('../controllers/taskController');
 // Create express router
 const router = express_1.default.Router();
 // Apply authMiddleware to all routes in this router
 router.use(authMiddleware_1.authMiddleware);
-// Create project endpoint
-router.post('/', projectController_1.createProject);
-// Get user projects endpoint
-router.get('/', projectController_1.getUserProjects);
-// Get project by ID endpoint
-router.get('/:projectID', projectController_1.getProjectByID);
-// Update project by ID endpoint
-router.put('/:projectID', projectController_1.updateProject);
-// Delete project by ID endpoint
-router.delete('/:projectID', projectController_1.deleteProject);
+// Create task endpoint
+router.post('/:projectID/tasks', taskController_1.createTask);
 exports.default = router;
