@@ -18,4 +18,6 @@ router.use(authMiddleware_1.authMiddleware);
 router.post('/:projectID/tasks', taskController_1.createTask);
 // Get tasks by project endpoint
 router.get('/:projectID/tasks', taskController_1.getTasksByProject);
+// Get task by ID endpoint
+router.get('/:projectID/tasks/:taskID', taskController_1.getTaskByID);
 exports.default = router;
