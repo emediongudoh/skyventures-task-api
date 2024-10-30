@@ -70,6 +70,8 @@ const projectSchema = new mongoose_1.Schema({
         type: Date,
         default: Date.now,
     },
+    // Soft delete flag
+    is_deleted: { type: Boolean, default: false },
 });
 const Project = mongoose_1.default.model('Project', projectSchema);
 exports.default = Project;

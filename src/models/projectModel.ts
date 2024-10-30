@@ -6,6 +6,7 @@ export interface IProject extends Document {
     description?: string;
     owner: mongoose.Types.ObjectId;
     created_at: Date;
+    is_deleted: boolean;
 }
 
 const projectSchema: Schema<IProject> = new Schema({
@@ -25,6 +26,8 @@ const projectSchema: Schema<IProject> = new Schema({
         type: Date,
         default: Date.now,
     },
+    // Soft delete flag
+    is_deleted: { type: Boolean, default: false },
 });
 
 const Project = mongoose.model<IProject>('Project', projectSchema);

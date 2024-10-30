@@ -41,7 +41,10 @@ export const getUserProjects = async (
     next: NextFunction
 ) => {
     try {
-        const projects = await Project.find({ owner: req.user?._id });
+        const projects = await Project.find({
+            owner: req.user?._id,
+            is_deleted: false,
+        });
 
         // Return user projects
         res.json({ projects });
@@ -67,6 +70,7 @@ export const getProjectByID = async (
         const project = await Project.findOne({
             _id: projectID,
             owner: req.user?._id,
+            is_deleted: false,
         });
 
         // Check if the project exists and the user is the owner
@@ -120,8 +124,8 @@ export const updateProject = async (
     }
 };
 
-// Delete a project by ID
-export const deleteProject = async (
+// Soft delete a project by ID
+export const softDeleteProject = async (
     req: Request,
     res: Response,
     next: NextFunction
@@ -134,11 +138,12 @@ export const deleteProject = async (
     }
 
     try {
-        // Find and delete the project
-        const project = await Project.findOneAndDelete({
-            _id: projectID,
-            owner: req.user?._id,
-        });
+        // Advanced requirement -> Soft delete project
+        const project = await Project.findOneAndUpdate(
+            { _id: projectID, owner: req.user?._id },
+            { is_deleted: true },
+            { new: true, runValidators: true }
+        );
 
         // Check if the project exists and the user is the owner
         if (!project) {
@@ -147,7 +152,7 @@ export const deleteProject = async (
             );
         }
 
-        res.json({ message: 'Project deleted successfully' });
+        res.json({ message: 'Project soft deleted successfully' });
     } catch (error) {
         next(error);
     }

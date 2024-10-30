@@ -5,7 +5,7 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.deleteProject =
+exports.softDeleteProject =
     exports.updateProject =
     exports.getProjectByID =
     exports.getUserProjects =
@@ -38,6 +38,7 @@ const getUserProjects = async (req, res, next) => {
     try {
         const projects = await projectModel_1.default.find({
             owner: req.user?._id,
+            is_deleted: false,
         });
         // Return user projects
         res.json({ projects });
@@ -59,6 +60,7 @@ const getProjectByID = async (req, res, next) => {
         const project = await projectModel_1.default.findOne({
             _id: projectID,
             owner: req.user?._id,
+            is_deleted: false,
         });
         // Check if the project exists and the user is the owner
         if (!project) {
@@ -105,8 +107,8 @@ const updateProject = async (req, res, next) => {
     }
 };
 exports.updateProject = updateProject;
-// Delete a project by ID
-const deleteProject = async (req, res, next) => {
+// Soft delete a project by ID
+const softDeleteProject = async (req, res, next) => {
     const { projectID } = req.params;
     // Validate ObjectId format
     if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
@@ -115,11 +117,12 @@ const deleteProject = async (req, res, next) => {
         );
     }
     try {
-        // Find and delete the project
-        const project = await projectModel_1.default.findOneAndDelete({
-            _id: projectID,
-            owner: req.user?._id,
-        });
+        // Advanced requirement -> Soft delete project
+        const project = await projectModel_1.default.findOneAndUpdate(
+            { _id: projectID, owner: req.user?._id },
+            { is_deleted: true },
+            { new: true, runValidators: true }
+        );
         // Check if the project exists and the user is the owner
         if (!project) {
             return next(
@@ -128,9 +131,9 @@ const deleteProject = async (req, res, next) => {
                 )
             );
         }
-        res.json({ message: 'Project deleted successfully' });
+        res.json({ message: 'Project soft deleted successfully' });
     } catch (error) {
         next(error);
     }
 };
-exports.deleteProject = deleteProject;
+exports.softDeleteProject = softDeleteProject;

@@ -22,6 +22,6 @@ router.get('/', projectController_1.getUserProjects);
 router.get('/:projectID', projectController_1.getProjectByID);
 // Update project by ID endpoint
 router.put('/:projectID', projectController_1.updateProject);
-// Delete project by ID endpoint
-router.delete('/:projectID', projectController_1.deleteProject);
+// Soft delete project by ID endpoint
+router.put('/:projectID/soft-delete', projectController_1.softDeleteProject);
 exports.default = router;

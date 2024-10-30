@@ -3,7 +3,7 @@ import express from 'express';
 // Controllers import
 import {
     createProject,
-    deleteProject,
+    softDeleteProject,
     getProjectByID,
     getUserProjects,
     updateProject,
@@ -30,7 +30,7 @@ router.get('/:projectID', getProjectByID);
 // Update project by ID endpoint
 router.put('/:projectID', updateProject);
 
-// Delete project by ID endpoint
-router.delete('/:projectID', deleteProject);
+// Soft delete project by ID endpoint
+router.put('/:projectID/soft-delete', softDeleteProject);
 
 export default router;
