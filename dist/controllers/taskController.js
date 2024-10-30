@@ -5,12 +5,16 @@ var __importDefault =
         return mod && mod.__esModule ? mod : { default: mod };
     };
 Object.defineProperty(exports, '__esModule', { value: true });
-exports.getTaskByID = exports.getTasksByProject = exports.createTask = void 0;
+exports.updateTask =
+    exports.getTaskByID =
+    exports.getTasksByProject =
+    exports.createTask =
+        void 0;
 const http_errors_1 = __importDefault(require('http-errors'));
+const mongoose_1 = __importDefault(require('mongoose'));
 // Models import
 const taskModel_1 = __importDefault(require('../models/taskModel'));
 const projectModel_1 = __importDefault(require('../models/projectModel'));
-const mongoose_1 = __importDefault(require('mongoose'));
 // Create task
 const createTask = async (req, res, next) => {
     const { title, description, status, due_date } = req.body;
@@ -87,3 +91,36 @@ const getTaskByID = async (req, res, next) => {
     }
 };
 exports.getTaskByID = getTaskByID;
+// Update task
+const updateTask = async (req, res, next) => {
+    const { projectID, taskID } = req.params;
+    const updates = req.body;
+    // Validate projectID format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(
+            http_errors_1.default.BadRequest('Invalid Project ID format')
+        );
+    }
+    // Validate taskID format
+    if (!mongoose_1.default.Types.ObjectId.isValid(req.params.taskID)) {
+        return next(http_errors_1.default.BadRequest('Invalid task ID format'));
+    }
+    try {
+        // Find and update the task
+        const task = await taskModel_1.default.findOneAndUpdate(
+            { _id: taskID, project: projectID },
+            updates,
+            { new: true, runValidators: true }
+        );
+        // Check if the task exists and the user is the owner
+        if (!task) {
+            return next(
+                http_errors_1.default.NotFound('Task not found or unauthorized')
+            );
+        }
+        res.status(200).json({ task });
+    } catch (error) {
+        next(error);
+    }
+};
+exports.updateTask = updateTask;

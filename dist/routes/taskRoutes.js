@@ -20,4 +20,6 @@ router.post('/:projectID/tasks', taskController_1.createTask);
 router.get('/:projectID/tasks', taskController_1.getTasksByProject);
 // Get task by ID endpoint
 router.get('/:projectID/tasks/:taskID', taskController_1.getTaskByID);
+// Update task by ID endpoint
+router.put('/:projectID/tasks/:taskID', taskController_1.updateTask);
 exports.default = router;

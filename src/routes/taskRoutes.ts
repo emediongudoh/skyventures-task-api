@@ -8,6 +8,7 @@ import {
     createTask,
     getTaskByID,
     getTasksByProject,
+    updateTask,
 } from '../controllers/taskController';
 
 // Create express router
@@ -24,5 +25,8 @@ router.get('/:projectID/tasks', getTasksByProject);
 
 // Get task by ID endpoint
 router.get('/:projectID/tasks/:taskID', getTaskByID);
+
+// Update task by ID endpoint
+router.put('/:projectID/tasks/:taskID', updateTask);
 
 export default router;

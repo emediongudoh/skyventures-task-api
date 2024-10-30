@@ -1,10 +1,10 @@
 import { Request as ExpressRequest, Response, NextFunction } from 'express';
 import createHttpError from 'http-errors';
+import mongoose from 'mongoose';
 
 // Models import
 import Task, { ITask } from '../models/taskModel';
 import Project from '../models/projectModel';
-import mongoose from 'mongoose';
 
 interface Request extends ExpressRequest {
     user?: { _id: string };
@@ -91,6 +91,46 @@ export const getTaskByID = async (
         if (!task) {
             return next(
                 createHttpError.NotFound('Task not found within this project')
+            );
+        }
+
+        res.status(200).json({ task });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Update task
+export const updateTask = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const { projectID, taskID } = req.params;
+    const updates = req.body;
+
+    // Validate projectID format
+    if (!mongoose.Types.ObjectId.isValid(req.params.projectID)) {
+        return next(createHttpError.BadRequest('Invalid Project ID format'));
+    }
+
+    // Validate taskID format
+    if (!mongoose.Types.ObjectId.isValid(req.params.taskID)) {
+        return next(createHttpError.BadRequest('Invalid task ID format'));
+    }
+
+    try {
+        // Find and update the task
+        const task = await Task.findOneAndUpdate(
+            { _id: taskID, project: projectID },
+            updates,
+            { new: true, runValidators: true }
+        );
+
+        // Check if the task exists and the user is the owner
+        if (!task) {
+            return next(
+                createHttpError.NotFound('Task not found or unauthorized')
             );
         }
 
