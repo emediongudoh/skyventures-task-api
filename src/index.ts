@@ -66,6 +66,42 @@ const swaggerOptions = {
                     },
                     required: ['name', 'description', 'owner'],
                 },
+                Task: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'Task ID',
+                        },
+                        title: {
+                            type: 'string',
+                            description: 'Task title',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Task description',
+                        },
+                        status: {
+                            type: 'string',
+                            description: 'Task status',
+                            enum: ['pending', 'in-progress', 'completed'],
+                        },
+                        due_date: {
+                            type: 'string',
+                            format: 'date-time',
+                            description: 'Task due date',
+                        },
+                        project: {
+                            type: 'string',
+                            description: 'Associated project ID',
+                        },
+                        is_deleted: {
+                            type: 'boolean',
+                            description: 'Task deletion status',
+                        },
+                    },
+                    required: ['title', 'project'],
+                },
             },
         },
         security: [
