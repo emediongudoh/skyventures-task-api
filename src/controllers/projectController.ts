@@ -20,6 +20,11 @@ export const createProject = async (
 
         const owner = req.user?._id;
 
+        // Check if the name is provided
+        if (!name) {
+            throw createHttpError.BadRequest('Project name is required');
+        }
+
         // Create and save the new project
         const newProject: IProject = await Project.create({
             name,

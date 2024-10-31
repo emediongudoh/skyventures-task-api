@@ -20,6 +20,10 @@ const createProject = async (req, res, next) => {
     try {
         const { name, description } = req.body;
         const owner = req.user?._id;
+        // Check if the name is provided
+        if (!name) {
+            throw http_errors_1.default.BadRequest('Project name is required');
+        }
         // Create and save the new project
         const newProject = await projectModel_1.default.create({
             name,
