@@ -20,7 +20,7 @@ const createProject = async (req, res, next) => {
     try {
         const { name, description } = req.body;
         const owner = req.user?._id;
-        // Check if the name is provided
+        // Check if the project name is provided
         if (!name) {
             throw http_errors_1.default.BadRequest('Project name is required');
         }

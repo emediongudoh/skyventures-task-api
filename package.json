@@ -9,7 +9,8 @@
         "format": "prettier --write .",
         "build-and-format": "npm run build && npm run format",
         "test:user": "jest src/tests/user.test.ts",
-        "test:project": "jest src/tests/project.test.ts"
+        "test:project": "jest src/tests/project.test.ts",
+        "test:task": "jest src/tests/task.test.ts"
     },
     "keywords": [],
     "author": "",

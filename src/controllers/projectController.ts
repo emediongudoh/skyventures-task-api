@@ -20,7 +20,7 @@ export const createProject = async (
 
         const owner = req.user?._id;
 
-        // Check if the name is provided
+        // Check if the project name is provided
         if (!name) {
             throw createHttpError.BadRequest('Project name is required');
         }

@@ -20,6 +20,11 @@ export const createTask = async (
     const { projectID } = req.params;
 
     try {
+        // Check if the task title is provided
+        if (!title) {
+            throw createHttpError.BadRequest('Task title is required');
+        }
+
         // Create and save the new task
         const newTask: ITask = await Task.create({
             title,

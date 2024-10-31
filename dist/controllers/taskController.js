@@ -22,6 +22,10 @@ const createTask = async (req, res, next) => {
     const { title, description, status, due_date } = req.body;
     const { projectID } = req.params;
     try {
+        // Check if the task title is provided
+        if (!title) {
+            throw http_errors_1.default.BadRequest('Task title is required');
+        }
         // Create and save the new task
         const newTask = await taskModel_1.default.create({
             title,
