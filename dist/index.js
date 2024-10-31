@@ -44,6 +44,34 @@ const swaggerOptions = {
                     bearerFormat: 'JWT',
                 },
             },
+            schemas: {
+                Project: {
+                    type: 'object',
+                    properties: {
+                        _id: {
+                            type: 'string',
+                            description: 'Project ID',
+                        },
+                        name: {
+                            type: 'string',
+                            description: 'Project name',
+                        },
+                        description: {
+                            type: 'string',
+                            description: 'Project description',
+                        },
+                        owner: {
+                            type: 'string',
+                            description: 'ID of the project owner',
+                        },
+                        is_deleted: {
+                            type: 'boolean',
+                            description: 'Project deletion status',
+                        },
+                    },
+                    required: ['name', 'description', 'owner'],
+                },
+            },
         },
         security: [
             {

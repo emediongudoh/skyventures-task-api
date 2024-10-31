@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: API for managing users
+ */
+
 import express from 'express';
 
 // Controller imports

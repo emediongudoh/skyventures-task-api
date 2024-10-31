@@ -1,4 +1,10 @@
 'use strict';
+/**
+ * @swagger
+ * tags:
+ *   name: User
+ *   description: API for managing users
+ */
 var __importDefault =
     (this && this.__importDefault) ||
     function (mod) {
