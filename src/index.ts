@@ -8,17 +8,58 @@ import compression from 'compression';
 import cors from 'cors';
 import createHttpError from 'http-errors';
 import mongoose from 'mongoose';
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsDoc from 'swagger-jsdoc';
 
 // Configs import
 import logger from './configs/loggerConfig';
 
 // Routes import
 import userRoutes from './routes/userRoute';
-import projectRoutes from './routes/projectRoutes';
-import taskRoutes from './routes/taskRoutes';
+import projectRoutes from './routes/projectRoute';
+import taskRoutes from './routes/taskRoute';
 
 // Create express app
 const app = express();
+
+// Swagger configuration
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'SkyVenture Tasks API',
+            version: '1.0.0',
+            description: 'Simple Task Management API',
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+    },
+    apis: ['./src/routes/*.ts'],
+};
+
+// Create Swagger documentation
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
+// Customize Swagger UI with a custom title
+const options = {
+    swaggerOptions: {
+        docExpansion: 'none',
+        defaultModelsExpandDepth: -1,
+        title: 'My Custom API Documentation',
+    },
+};
 
 // Load environment variables
 dotenv.config();
@@ -72,6 +113,14 @@ app.use(cors());
 app.use('/api/user', userRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/projects', taskRoutes);
+
+// Redirect all root requests to /api-docs
+app.get('/', (req, res) => {
+    res.redirect('/api-docs');
+});
+
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs, options));
 
 // Start the dev server
 let server = app.listen(PORT, () => {

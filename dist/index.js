@@ -17,14 +17,52 @@ const compression_1 = __importDefault(require('compression'));
 const cors_1 = __importDefault(require('cors'));
 const http_errors_1 = __importDefault(require('http-errors'));
 const mongoose_1 = __importDefault(require('mongoose'));
+const swagger_ui_express_1 = __importDefault(require('swagger-ui-express'));
+const swagger_jsdoc_1 = __importDefault(require('swagger-jsdoc'));
 // Configs import
 const loggerConfig_1 = __importDefault(require('./configs/loggerConfig'));
 // Routes import
 const userRoute_1 = __importDefault(require('./routes/userRoute'));
-const projectRoutes_1 = __importDefault(require('./routes/projectRoutes'));
-const taskRoutes_1 = __importDefault(require('./routes/taskRoutes'));
+const projectRoute_1 = __importDefault(require('./routes/projectRoute'));
+const taskRoute_1 = __importDefault(require('./routes/taskRoute'));
 // Create express app
 const app = (0, express_1.default)();
+// Swagger configuration
+const swaggerOptions = {
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'SkyVenture Tasks API',
+            version: '1.0.0',
+            description: 'Simple Task Management API',
+        },
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
+            },
+        ],
+    },
+    apis: ['./src/routes/*.ts'],
+};
+// Create Swagger documentation
+const swaggerDocs = (0, swagger_jsdoc_1.default)(swaggerOptions);
+// Customize Swagger UI with a custom title
+const options = {
+    swaggerOptions: {
+        docExpansion: 'none',
+        defaultModelsExpandDepth: -1,
+        title: 'My Custom API Documentation',
+    },
+};
 // Load environment variables
 dotenv_1.default.config();
 const PORT = process.env.PORT || 3000;
@@ -67,8 +105,18 @@ app.use((0, compression_1.default)());
 app.use((0, cors_1.default)());
 // Routing
 app.use('/api/user', userRoute_1.default);
-app.use('/api/projects', projectRoutes_1.default);
-app.use('/api/projects', taskRoutes_1.default);
+app.use('/api/projects', projectRoute_1.default);
+app.use('/api/projects', taskRoute_1.default);
+// Redirect all root requests to /api-docs
+app.get('/', (req, res) => {
+    res.redirect('/api-docs');
+});
+// Serve Swagger UI
+app.use(
+    '/api-docs',
+    swagger_ui_express_1.default.serve,
+    swagger_ui_express_1.default.setup(swaggerDocs, options)
+);
 // Start the dev server
 let server = app.listen(PORT, () => {
     loggerConfig_1.default.info(`Server listening on port ${PORT}`);
