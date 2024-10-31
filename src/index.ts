@@ -31,6 +31,11 @@ const swaggerOptions = {
             version: '1.0.0',
             description: 'Simple Task Management API',
         },
+        tags: [
+            { name: 'User', description: 'API for managing users' },
+            { name: 'Projects', description: 'API for managing projects' },
+            { name: 'Tasks', description: 'API for managing tasks' },
+        ],
         components: {
             securitySchemes: {
                 bearerAuth: {
