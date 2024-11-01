@@ -1,6 +1,12 @@
-# Hello there 👋🏽 - lemme help you get started with this repo
+# Hello there 👋🏽 - lemme give you a short tour of this repo
 
 I'm **super excited** to have you. Let's dive right in.
+
+First off, here are helpful links
+
+POSTMAN DOCUMENTATION - https://www.postman.com/crimson-flare-787076/emediong-de-don/collection/3qek5m7/skyventures-tasks
+
+RENDER DEPLOYMENT && SWAGGER DOCS - https://emediong-skyventures-task-api.onrender.com
 
 ### DOCKER 🐳
 
